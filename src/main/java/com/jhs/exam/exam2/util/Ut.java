@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -210,5 +212,16 @@ public class Ut {
 		}
 
 		return sb.toString();
+	}
+
+	public static boolean isValidEmail(String email) {
+		boolean err = false;
+		String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(email);
+		if (m.matches()) {
+			err = true;
+		}
+		return err;
 	}
 }

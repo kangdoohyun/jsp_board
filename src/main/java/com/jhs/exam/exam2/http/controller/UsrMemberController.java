@@ -44,10 +44,104 @@ public class UsrMemberController extends Controller {
 		case "doFindLoginPw":
 			actionDoFindLoginPw(rq);
 			break;
+		case "myPage":
+			actionShowMyPage(rq);
+			break;
+		case "modify":
+			actionShowModify(rq);
+			break;
+		case "doNicknameCheck":
+			actionDoNicknameCheck(rq);
+			break;
+		case "doEmailCheck":
+			actionDoEmailCheck(rq);
+			break;
+		case "doModify":
+			actionDoModify(rq);
 		default:
 			rq.println("존재하지 않는 페이지 입니다.");
 			break;
 		}
+	}
+	private void actionDoModify(Rq rq) {
+		String loginId = rq.getParam("loginId", "");
+		String loginPw = rq.getParam("loginPw", "");
+		String name = rq.getParam("name", "");
+		String nickname = rq.getParam("nickname", "");
+		String email = rq.getParam("email", "");
+		String cellphoneNo = rq.getParam("cellphoneNo", "");
+		
+		if (loginId.length() == 0) {
+			rq.historyBack("loginId를 입력해주세요.");
+			return;
+		}
+		
+		if (loginPw.length() == 0) {
+			rq.historyBack("loginPw를 입력해주세요.");
+			return;
+		}
+		
+		if (name.length() == 0) {
+			rq.historyBack("name을 입력해주세요.");
+			return;
+		}
+		
+		if (nickname.length() == 0) {
+			rq.historyBack("nickname을 입력해주세요.");
+			return;
+		}
+		
+		if (email.length() == 0) {
+			rq.historyBack("email을 입력해주세요.");
+			return;
+		}
+		
+		if (cellphoneNo.length() == 0) {
+			rq.historyBack("cellphoneNo를 입력해주세요.");
+			return;
+		}
+		
+		ResultData modifyRd = memberService.modify(loginId, loginPw, name, nickname, email, cellphoneNo);
+		
+		if(modifyRd.isFail()) {
+			rq.historyBack(modifyRd.getMsg());
+			return;
+		}
+		
+		String redirectUri = "../member/doLogout";
+		
+		rq.replace(modifyRd.getMsg(), redirectUri);
+	}
+
+	private void actionDoEmailCheck(Rq rq) {
+		String email = rq.getParam("email", "");
+		if(!Ut.isValidEmail(email)) {
+			rq.print("false");
+			return;
+		}
+		Member member = memberService.getMemberByEmail(email);
+		if(member != null) {
+			rq.print(member.getEmail());
+		}
+		rq.print("");
+	}
+	
+	private void actionDoNicknameCheck(Rq rq) {
+		String nickname = rq.getParam("nickname", "");
+		Member member = memberService.getMemberByNickname(nickname);
+		if(member != null) {
+			rq.print(member.getNickname());
+			return;
+		}
+		rq.print("");
+	}
+	
+	private void actionShowModify(Rq rq) {
+		rq.jsp("usr/member/modify");
+	}
+
+	private void actionShowMyPage(Rq rq) {
+		rq.jsp("usr/member/myPage");
 	}
 
 	private void actionShowFindLoginId(Rq rq) {
